@@ -113,7 +113,7 @@ To clear the drawn polygons and reset the scene, click the **Clear Lists** butto
 
 The detected objects and their frequencies will be displayed in the list on the right side of the application window. The list will show the class names of the objects and the number of times each class appears in the detection results.
 
-Additionally, the application will save the detection results as a JSON file in the `**records**` folder. The JSON file will include the filename, predictions, and the base64 encoded original image.
+Additionally, the application will save the detection results as a JSON file in the '**records**' folder. The JSON file will include the filename, predictions, and the base64 encoded original image.
 
 ## Configuration
 
