@@ -5,7 +5,7 @@ import json
 from collections import Counter
 from shapely.geometry import Polygon, box
 from imageprocess_ui import Ui_MainWindow
-from predict import DetectionPredictor, class_names
+from detection_predictor import DetectionPredictor, class_names
 import sys
 import os
 
