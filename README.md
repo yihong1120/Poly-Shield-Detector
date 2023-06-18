@@ -2,6 +2,8 @@
 
 Poly-Shield-Detector is an image processing tool that combines YOLOv8 and Pyside6. Detect objects in images, define polygons, and filter objects inside polygons. Perfect for interactive annotation and object recognition tasks. Efficient and user-friendly.
 
+![User Interface](https://github.com/yihong1120/Poly-Shield-Detector/blob/main/images/User_Interface.png)
+
 ## Contents
 
 - [Features](#features)
@@ -108,6 +110,8 @@ The application window will appear, providing the following options:
 ### Clear Polygons
 
 To clear the drawn polygons and reset the scene, click the **Clear Lists** button.
+
+![Flowchart](https://github.com/yihong1120/Poly-Shield-Detector/blob/main/images/flowchart.png)
 
 ## Results
 
