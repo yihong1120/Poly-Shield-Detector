@@ -1,0 +1,4 @@
+export PATH=$PATH:/System/Volumes/Data/opt/anaconda3/envs/GUI_YOLOv8/bin/pyside6-designer
+export DYLD_LIBRARY_PATH=/usr/local/Cellar/python@3.11/3.11.4/Frameworks/Python.framework/Versions/3.11/lib/python3.11/config-3.11-darwin:$DYLD_LIBRARY_PATH
+export PYSIDE_DESIGNER_PLUGINS=/opt/anaconda3/envs/GUI_YOLOv8/lib/python3.11/site-packages/PySide6/plugins/designer
+
