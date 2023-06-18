@@ -5,10 +5,13 @@ Poly-Shield-Detector is an image processing tool that combines YOLOv8 and Pyside
 ## Contents
 
 - [Features](#features)
-- [Requirements](#requirements)
-- [Preparation](#preparation)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Select Image](#select-image)
+  - [Draw Polygons](#draw-polygons)
+  - [Perform Object Detection](#perform-object-detection)
+  - [Clear Polygons](#clear-polygons)
+- [Results](#results)
 - [Configuration](#configuration)
 - [License](#license)
 
@@ -44,13 +47,27 @@ Before running Poly-Shield-Detector, make sure to perform the following preparat
 
 ```shell
 git clone https://github.com/yihong1120/Poly-Shield-Detector.git
+```
+
+2. Navigate to the project directory:
+
+```shell
 cd Poly-Shield-Detector
 ```
 
-2. Install the required dependencies:
+3. Install the required dependencies:
 
 ```shell
 pip install -r requirements.txt
+```
+
+4. Download the pre-trained YOLOv5 model:
+
+```shell
+mkdir models
+cd models
+wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x.pt
+cd ..
 ```
 
 ## Usage
@@ -61,11 +78,42 @@ pip install -r requirements.txt
 python app.py
 ```
 
-2. Select an image file using the "Upload Image" button.
-3. Define polygons by clicking on the image.
-4. Click the "Predict" button to perform object detection.
-5. View the detected objects in the list on the right-hand side.
-6. To clear the polygons and start over, click the "Clear Lists" button.
+The application window will appear, providing the following options:
+
+* **Upload Image**: Click this button to select an image for object detection.
+
+* **Predict**: Click this button to perform object detection on the selected image.
+
+* **Clear Lists**: Click this button to clear the polygons and reset the scene.
+
+### Select Image
+
+1. Click the **Upload Image** button.
+
+2. Select an image file (PNG, JPG, or BMP) from the file dialog and click **Open**.
+
+### Draw Polygons
+1. After selecting an image, you can draw polygons on the image by clicking the desired points on the image.
+
+2. To create a closed polygon, click on the starting point again or click on the **Close Polygon** button that appears.
+
+3. To draw multiple polygons, repeat the process.
+
+### Perform Object Detection
+
+1. After drawing polygons or if no polygons are drawn, click the **Predict** button.
+
+2. The application will perform object detection on the selected image and display the detected objects in the list on the right.
+
+### Clear Polygons
+
+To clear the drawn polygons and reset the scene, click the **Clear Lists** button.
+
+## Results
+
+The detected objects and their frequencies will be displayed in the list on the right side of the application window. The list will show the class names of the objects and the number of times each class appears in the detection results.
+
+Additionally, the application will save the detection results as a JSON file in the `**records**` folder. The JSON file will include the filename, predictions, and the base64 encoded original image.
 
 ## Configuration
 
