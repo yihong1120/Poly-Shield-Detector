@@ -63,7 +63,7 @@ cd Poly-Shield-Detector
 pip install -r requirements.txt
 ```
 
-4. Download the pre-trained YOLOv5 model:
+4. Download the pre-trained YOLOv8 model:
 
 ```shell
 mkdir models
