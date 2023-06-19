@@ -17,7 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QGraphicsView, QLabel, QListWidget,
     QListWidgetItem, QMainWindow, QMenuBar, QPushButton,
-    QSizePolicy, QStatusBar, QWidget)
+    QRadioButton, QSizePolicy, QSlider, QStatusBar,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -28,16 +29,13 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.button_upload_img = QPushButton(self.centralwidget)
         self.button_upload_img.setObjectName(u"button_upload_img")
-        self.button_upload_img.setGeometry(QRect(20, 620, 100, 32))
-        self.button_show_lists = QPushButton(self.centralwidget)
-        self.button_show_lists.setObjectName(u"button_show_lists")
-        self.button_show_lists.setGeometry(QRect(130, 620, 100, 32))
+        self.button_upload_img.setGeometry(QRect(20, 620, 100, 41))
         self.label_img_path = QLabel(self.centralwidget)
         self.label_img_path.setObjectName(u"label_img_path")
-        self.label_img_path.setGeometry(QRect(20, 660, 81, 21))
+        self.label_img_path.setGeometry(QRect(20, 720, 81, 31))
         self.view_img_path = QLabel(self.centralwidget)
         self.view_img_path.setObjectName(u"view_img_path")
-        self.view_img_path.setGeometry(QRect(100, 660, 491, 20))
+        self.view_img_path.setGeometry(QRect(100, 720, 491, 31))
         self.view_image_ploygon = QGraphicsView(self.centralwidget)
         self.view_image_ploygon.setObjectName(u"view_image_ploygon")
         self.view_image_ploygon.setGeometry(QRect(10, 30, 581, 571))
@@ -46,7 +44,7 @@ class Ui_MainWindow(object):
         self.list_clicked_points.setGeometry(QRect(610, 30, 261, 341))
         self.button_predict = QPushButton(self.centralwidget)
         self.button_predict.setObjectName(u"button_predict")
-        self.button_predict.setGeometry(QRect(350, 620, 100, 32))
+        self.button_predict.setGeometry(QRect(20, 670, 100, 41))
         self.show_oroginal_img = QLabel(self.centralwidget)
         self.show_oroginal_img.setObjectName(u"show_oroginal_img")
         self.show_oroginal_img.setGeometry(QRect(20, 10, 101, 16))
@@ -61,7 +59,14 @@ class Ui_MainWindow(object):
         self.show_detected_objects.setGeometry(QRect(620, 390, 111, 16))
         self.button_clear_lists = QPushButton(self.centralwidget)
         self.button_clear_lists.setObjectName(u"button_clear_lists")
-        self.button_clear_lists.setGeometry(QRect(240, 620, 100, 32))
+        self.button_clear_lists.setGeometry(QRect(130, 620, 100, 41))
+        self.slider_polygon_opacity = QSlider(self.centralwidget)
+        self.slider_polygon_opacity.setObjectName(u"slider_polygon_opacity")
+        self.slider_polygon_opacity.setGeometry(QRect(249, 630, 221, 25))
+        self.slider_polygon_opacity.setOrientation(Qt.Horizontal)
+        self.radioButton_points_lines_opacity = QRadioButton(self.centralwidget)
+        self.radioButton_points_lines_opacity.setObjectName(u"radioButton_points_lines_opacity")
+        self.radioButton_points_lines_opacity.setGeometry(QRect(250, 670, 221, 31))
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -79,7 +84,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.button_upload_img.setText(QCoreApplication.translate("MainWindow", u"Upload Image", None))
-        self.button_show_lists.setText(QCoreApplication.translate("MainWindow", u"\u986f\u793a\u7981\u5340lists", None))
         self.label_img_path.setText(QCoreApplication.translate("MainWindow", u"Image Path:", None))
         self.view_img_path.setText("")
         self.button_predict.setText(QCoreApplication.translate("MainWindow", u"Start Predict", None))
@@ -87,5 +91,6 @@ class Ui_MainWindow(object):
         self.show_clicked_points.setText(QCoreApplication.translate("MainWindow", u"Click Points:", None))
         self.show_detected_objects.setText(QCoreApplication.translate("MainWindow", u"Detected Objects:", None))
         self.button_clear_lists.setText(QCoreApplication.translate("MainWindow", u"Clear Lists", None))
+        self.radioButton_points_lines_opacity.setText(QCoreApplication.translate("MainWindow", u"Points and Lines Opacity", None))
     # retranslateUi
 
