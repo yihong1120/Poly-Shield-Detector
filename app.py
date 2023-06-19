@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QGraphicsPixmapItem, QApplication, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsScene
-from PySide6.QtGui import QImage, QPixmap, QIcon, QBrush, QColor, QPen
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QGraphicsPixmapItem, QApplication, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsScene, QGraphicsOpacityEffect, QGraphicsPolygonItem
+from PySide6.QtGui import QImage, QPixmap, QIcon, QBrush, QColor, QPen, QPolygonF
 from PySide6.QtCore import Qt, QPointF
 import json
 from collections import Counter
@@ -34,10 +34,15 @@ class CustomGraphicsScene(QGraphicsScene):
             self.closed_polygons.append(self.points.copy())
             self.points = []
             self.close_poly = None
+            self.mainWindow.list_clicked_points.addItem('...........................')
+
+            # Get the opacity value from the slider and apply it to the polygon
+            opacity = self.mainWindow.slider_polygon_opacity.value() / 100.0
+            self.add_polygon(self.closed_polygons[-1], QColor("red"), opacity)
         else:
             # add point to polygon
             self.add_ellipse(point, QColor("red"), 5)
-            self.mainWindow.list_clicked_points.addItem("({:.2f}, {:.2f})".format(point.x(), point.y()))
+            self.mainWindow.list_clicked_points.addItem('({:.2f}, {:.2f})'.format(point.x(), point.y()))
             if len(self.points) > 0:
                 self.add_line(self.points[-1], point, QColor("red"), 2)
             self.points.append(point)
@@ -66,6 +71,23 @@ class CustomGraphicsScene(QGraphicsScene):
             else:
                 self.close_poly.setRect(self.points[0].x() - 5, self.points[0].y() - 5, 10, 10)
 
+    def add_polygon(self, points, color, opacity):
+        # Create a polygon item
+        polygon = QPolygonF(points)
+        polygon_item = QGraphicsPolygonItem(polygon)
+
+        # Set the color and transparency of the polygon
+        brush = QBrush(color)
+        polygon_item.setBrush(brush)
+
+        # Create an opacity effect
+        opacity_effect = QGraphicsOpacityEffect()
+        opacity_effect.setOpacity(opacity)
+        polygon_item.setGraphicsEffect(opacity_effect)
+
+        # Add the polygon to the scene
+        self.addItem(polygon_item)
+
 
 class ImageProcessApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -79,6 +101,20 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         self.button_upload_img.setCursor(Qt.PointingHandCursor)
         self.button_predict.setCursor(Qt.PointingHandCursor)
         self.button_clear_lists.setCursor(Qt.PointingHandCursor)
+        self.slider_polygon_opacity.valueChanged.connect(self.on_slider_changed)
+        self.radioButton_points_lines_opacity.toggled.connect(self.on_radio_button_toggled)
+
+        # Set radioButton_points_lines_opacity as checked at the beginning
+        self.radioButton_points_lines_opacity.setChecked(True)
+
+    def on_radio_button_toggled(self):
+        # Get the new opacity value from the radioButton
+        opacity = 1.0 if self.radioButton_points_lines_opacity.isChecked() else 0.0
+
+        # Apply the new opacity to all lines and points
+        for item in self.view_image_ploygon.scene().items():
+            if isinstance(item, (QGraphicsLineItem, QGraphicsEllipseItem)):
+                item.setOpacity(opacity)
 
     def select_image(self):
         # Open file dialog and select image file
@@ -117,6 +153,13 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
 
         return old_scene
 
+    def process_nopolygons(self, filename):
+        # Handles detection without polygons.
+        preds, old_scene = self.process_objects(filename)
+
+        if old_scene is not None:
+            self.redraw_polygons(old_scene)
+
     def predict_image(self):
         # Load image and run object detection
         self.list_detected_objects.clear()
@@ -128,7 +171,7 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         self.detector = DetectionPredictor(model_path='models/yolov8x.pt', img_path=img_path, img_output='./output')
         self.detector.predict()
 
-        # check if there are any polygons defined
+        # process polygons if any
         if self.current_scene.closed_polygons: 
             # process polygons
             self.process_polygons(filename)
@@ -138,18 +181,17 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
 
     def process_polygons(self, filename):
         # Handles detection with polygons.
-        points_list = [[point.x(), point.y()] for point in self.current_scene.closed_polygons[0]]
+        all_polygons = self.current_scene.closed_polygons
+        points_list = []
+        for polygon in all_polygons:
+            points_list.append([[point.x(), point.y()] for point in polygon])
+
         preds, old_scene = self.process_objects(filename)
-        inside_polygon = self.filter_objects_inside_polygon(points_list, preds)
+        inside_polygon = []
+        for points in points_list:
+            inside_polygon.extend(self.filter_objects_inside_polygon(points, preds))
         self.display_inside_polygon(inside_polygon)
         self.redraw_polygons(old_scene)
-
-    def process_nopolygons(self, filename):
-        # Handles detection without polygons.
-        preds, old_scene = self.process_objects(filename)
-
-        if old_scene is not None:
-            self.redraw_polygons(old_scene)
 
     def process_objects(self, filename):
         # Load the object detection results from the JSON file and display the recognized objects in the list_detected_objects QListWidget.
@@ -181,7 +223,7 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         old_height = self.new_scene_height
         old_width = self.new_scene_width
 
-        scaled_polygon_points = [[round(point[0] * new_width / old_width), round(point[1] * new_height / old_height)] for
+        scaled_polygon_points = [[int(point[0] * new_width / old_width), int(point[1] * new_height / old_height)] for
                                 point in points_list]
 
         polygon = Polygon(scaled_polygon_points)
@@ -190,10 +232,13 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
 
         # Check if the intersection area between the polygon and each bounding box is greater than 50% of the bounding box area.
         for obj in preds:
-            bbox = box(obj[0], obj[1], obj[2], obj[3])
+            bbox = box(int(obj[0]), int(obj[1]), int(obj[2]), int(obj[3]))
 
             if polygon.intersection(bbox).area / bbox.area > 0.5:
                 inside_polygon.append(obj)
+
+        # remove duplicates
+        inside_polygon = list(set([tuple(i) for i in inside_polygon]))
 
         return inside_polygon
 
@@ -203,7 +248,7 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         counter = Counter(last_elements)
         sorted_counter = dict(sorted(counter.items()))
 
-        self.list_detected_objects.addItem('List of objects which are inside the polygon:')
+        self.list_detected_objects.addItem('List of objects inside the polygons:')
         for key, value in sorted_counter.items():
             self.list_detected_objects.addItem(f'{class_names[int(key)]}: {value} times')
 
@@ -220,6 +265,12 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
 
         self.view_image_ploygon.scene().closed_polygons = polygons
 
+        # Re-draw and fill the polygons after processing
+        for polygon in self.current_scene.closed_polygons:
+            opacity = self.slider_polygon_opacity.value() / 100.0
+            self.current_scene.add_polygon(polygon, QColor("red"), opacity)
+
+
     def clear_lists(self):
         # clear polygon and reset scene
         self.view_image_ploygon.scene().clear()
@@ -228,6 +279,15 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         self.view_image_ploygon.scene().points = []
         self.view_image_ploygon.scene().close_poly = None
         self.display_image(self.view_img_path.text())
+
+    def on_slider_changed(self):
+        # Get the new opacity value from the slider
+        opacity = self.slider_polygon_opacity.value() / 100.0
+
+        # Apply the new opacity to all polygons
+        for polygon_item in self.view_image_ploygon.scene().items():
+            if isinstance(polygon_item, QGraphicsPolygonItem):
+                polygon_item.graphicsEffect().setOpacity(opacity)
 
 
 if __name__ == "__main__":
