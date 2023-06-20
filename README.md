@@ -88,6 +88,12 @@ The application window will appear, providing the following options:
 
 * **Clear Lists**: Click this button to clear the polygons and reset the scene.
 
+* **Polygon Opacity Slider**: Adjust this slider to change the opacity of the polygons.
+
+* **Points and Lines Opacity Radio Button**: Use these buttons to control the opacity of the points and lines.
+
+* **Right-Click to Delete Polygon**: Right-click on a polygon to delete it.
+
 ### Select Image
 
 1. Click the **Upload Image** button.
@@ -110,6 +116,24 @@ The application window will appear, providing the following options:
 ### Clear Polygons
 
 To clear the drawn polygons and reset the scene, click the **Clear Lists** button.
+
+### Adjusting Polygon Opacity
+
+1. To adjust the opacity of the polygons, use the **Polygon Opacity Slider**.
+
+2. Slide to the left to make the polygon more transparent, or to the right to make it more opaque.
+
+### Controlling Points and Lines Opacity
+
+1. To adjust the opacity of points and lines, use the **Points and Lines Opacity Radio Button**.
+
+2. Select the desired opacity level by clicking on one of the buttons.
+
+### Deleting a Polygon
+
+1. To delete a polygon, right-click on the polygon you wish to remove.
+
+2. The polygon will be immediately removed from the image.
 
 ![Flowchart](https://github.com/yihong1120/Poly-Shield-Detector/blob/main/images/flowchart.png)
 
