@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QGraphicsPixmapItem, QApplication, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsScene, QGraphicsOpacityEffect, QGraphicsPolygonItem
-from PySide6.QtGui import QImage, QPixmap, QIcon, QBrush, QColor, QPen, QPolygonF
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QGraphicsPixmapItem, QApplication, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsScene, QGraphicsOpacityEffect, QGraphicsPolygonItem, QMenu
+from PySide6.QtGui import QImage, QPixmap, QIcon, QBrush, QColor, QPen, QPolygonF,QTransform, QAction
 from PySide6.QtCore import Qt, QPointF
 import json
 from collections import Counter
@@ -18,6 +18,41 @@ class CustomGraphicsScene(QGraphicsScene):
         self.close_poly = None  # closing point of the polygon
         self.closed_polygons = []  # list to store polygons
         self.points_lines_opacity = 1.0  # initial opacity for points and lines
+
+    def contextMenuEvent(self, event):
+        # get selected item
+        # item = self.itemAt(event.scenePos(), Qt.IdentityTransform)
+        item = self.itemAt(event.scenePos(), QTransform.fromTranslate(0, 0))
+
+
+        # check if item is a polygon
+        if isinstance(item, QGraphicsPolygonItem):
+            # create context menu
+            contextMenu = QMenu(self.mainWindow)
+
+            # create actions
+            editAction = QAction("Edit", self.mainWindow)
+            deleteAction = QAction("Delete", self.mainWindow)
+
+            # add actions to menu
+            contextMenu.addAction(editAction)
+            contextMenu.addAction(deleteAction)
+
+            # connect actions
+            editAction.triggered.connect(lambda: self.edit_polygon(item))
+            deleteAction.triggered.connect(lambda: self.delete_polygon(item))
+
+            # show menu
+            contextMenu.exec(event.screenPos())
+
+    def edit_polygon(self, polygon):
+        # edit polygon code here
+        print("Editing polygon")
+
+    def delete_polygon(self, polygon):
+        # delete polygon code here
+        print("Deleting polygon")
+        self.removeItem(polygon)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
