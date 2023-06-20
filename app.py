@@ -17,35 +17,38 @@ class CustomGraphicsScene(QGraphicsScene):
         self.points = []  # list to store points for the polygon
         self.close_poly = None  # closing point of the polygon
         self.closed_polygons = []  # list to store polygons
+        self.points_lines_opacity = 1.0  # initial opacity for points and lines
 
     def mousePressEvent(self, event):
-        point = event.scenePos()
+        if event.button() == Qt.LeftButton:
+            point = event.scenePos()
 
-        # check if click happened on pixmap_item, if not, do nothing
-        if self.pixmap_item is not None:
-            pixmap_rect = self.pixmap_item.boundingRect()
-            if not pixmap_rect.contains(point):
-                return
+            # check if click happened on pixmap_item, if not, do nothing
+            if self.pixmap_item is not None:
+                pixmap_rect = self.pixmap_item.boundingRect()
+                if not pixmap_rect.contains(point):
+                    return
 
-        # if 3 points are available and close polygon is under mouse, close polygon
-        if len(self.points) > 2 and self.close_poly is not None and self.close_poly.isUnderMouse():
-            self.add_line(self.points[-1], self.points[0], QColor("red"), 2)
-            self.close_poly.setRect(self.points[0].x() - 5, self.points[0].y() - 5, 10, 10)
-            self.closed_polygons.append(self.points.copy())
-            self.points = []
-            self.close_poly = None
-            self.mainWindow.list_clicked_points.addItem('...........................')
+            # if 3 points are available and close polygon is under mouse, close polygon
+            if len(self.points) > 2 and self.close_poly is not None and self.close_poly.isUnderMouse():
+                self.add_line(self.points[-1], self.points[0], QColor("red"), 2)
+                self.close_poly.setRect(self.points[0].x() - 5, self.points[0].y() - 5, 10, 10)
+                self.closed_polygons.append(self.points.copy())
+                self.points = []
+                self.close_poly = None
+                self.mainWindow.list_clicked_points.addItem('...........................')
 
-            # Get the opacity value from the slider and apply it to the polygon
-            opacity = self.mainWindow.slider_polygon_opacity.value() / 100.0
-            self.add_polygon(self.closed_polygons[-1], QColor("red"), opacity)
-        else:
-            # add point to polygon
-            self.add_ellipse(point, QColor("red"), 5)
-            self.mainWindow.list_clicked_points.addItem('({:.2f}, {:.2f})'.format(point.x(), point.y()))
-            if len(self.points) > 0:
-                self.add_line(self.points[-1], point, QColor("red"), 2)
-            self.points.append(point)
+                # Get the opacity value from the slider and apply it to the polygon
+                polygon_opacity = self.mainWindow.slider_polygon_opacity.value() / 100.0
+                self.add_polygon(self.closed_polygons[-1], QColor("red"), polygon_opacity)
+            
+            else:
+                # add point to polygon
+                self.add_ellipse(point, QColor("red"), 5)
+                self.mainWindow.list_clicked_points.addItem('({:.2f}, {:.2f})'.format(point.x(), point.y()))
+                if len(self.points) > 0:
+                    self.add_line(self.points[-1], point, QColor("red"), 2)
+                self.points.append(point)
 
     def add_ellipse(self, point, color, radius=3):
         # add an ellipse (point) to the scene
@@ -62,14 +65,6 @@ class CustomGraphicsScene(QGraphicsScene):
         line = QGraphicsLineItem(start.x(), start.y(), end.x(), end.y())
         line.setPen(pen)
         self.addItem(line)
-
-    def mouseMoveEvent(self, event):
-        # enlarge closing point when mouse hovers over it
-        if len(self.points) > 2 and self.close_poly is not None:
-            if self.close_poly.isUnderMouse():
-                self.close_poly.setRect(self.points[0].x() - 10, self.points[0].y() - 10, 20, 20)
-            else:
-                self.close_poly.setRect(self.points[0].x() - 5, self.points[0].y() - 5, 10, 10)
 
     def add_polygon(self, points, color, opacity):
         # Create a polygon item
@@ -88,6 +83,13 @@ class CustomGraphicsScene(QGraphicsScene):
         # Add the polygon to the scene
         self.addItem(polygon_item)
 
+    def mouseMoveEvent(self, event):
+        # enlarge closing point when mouse hovers over it
+        if len(self.points) > 2 and self.close_poly is not None:
+            if self.close_poly.isUnderMouse():
+                self.close_poly.setRect(self.points[0].x() - 10, self.points[0].y() - 10, 20, 20)
+            else:
+                self.close_poly.setRect(self.points[0].x() - 5, self.points[0].y() - 5, 10, 10)
 
 class ImageProcessApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -111,10 +113,15 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         # Get the new opacity value from the radioButton
         opacity = 1.0 if self.radioButton_points_lines_opacity.isChecked() else 0.0
 
-        # Apply the new opacity to all lines and points
-        for item in self.view_image_ploygon.scene().items():
-            if isinstance(item, (QGraphicsLineItem, QGraphicsEllipseItem)):
-                item.setOpacity(opacity)
+        # Update the scene's opacity value
+        if self.view_image_ploygon.scene() is not None:
+            self.view_image_ploygon.scene().opacity = opacity
+
+            # Apply the new opacity to all lines and points
+            items = self.view_image_ploygon.scene().items()
+            for item in items:
+                if isinstance(item, (QGraphicsLineItem, QGraphicsEllipseItem)):
+                    item.setOpacity(opacity)
 
     def select_image(self):
         # Open file dialog and select image file
@@ -269,7 +276,6 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         for polygon in self.current_scene.closed_polygons:
             opacity = self.slider_polygon_opacity.value() / 100.0
             self.current_scene.add_polygon(polygon, QColor("red"), opacity)
-
 
     def clear_lists(self):
         # clear polygon and reset scene
