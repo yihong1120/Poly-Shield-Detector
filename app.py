@@ -13,11 +13,12 @@ import os
 class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, parent=None, mainWindow=None):
         super().__init__(parent)
-        self.mainWindow = mainWindow  # main window reference for callbacks
-        self.points = []  # list to store points for the polygon
-        self.close_poly = None  # closing point of the polygon
-        self.closed_polygons = []  # list to store polygons
-        self.points_lines_opacity = 1.0  # initial opacity for points and lines
+        self.mainWindow = mainWindow  
+        self.pointItems = {}  # QGraphicsEllipseItems for the points
+        self.lineItems = {}  # QGraphicsLineItems for the lines
+        self.points = []  #points for the polygon
+        self.close_poly = None
+        self.closed_polygons = []
 
     def contextMenuEvent(self, event):
         # get selected item
@@ -49,10 +50,45 @@ class CustomGraphicsScene(QGraphicsScene):
         # edit polygon code here
         print("Editing polygon")
 
+    def remove_point(self, point_key):
+        self.mainWindow.view_image_ploygon.scene().removeItem(self.pointItems[point_key])
+
+    def remove_line(self, point_key1, point_key2):
+        line_key1 = (point_key1, point_key2)
+        line_key2 = (point_key2, point_key1)
+        if line_key1 in self.lineItems:
+            self.mainWindow.view_image_ploygon.scene().removeItem(self.lineItems[line_key1])
+        elif line_key2 in self.lineItems:
+            self.mainWindow.view_image_ploygon.scene().removeItem(self.lineItems[line_key2])
+
     def delete_polygon(self, polygon):
-        # delete polygon code here
-        print("Deleting polygon")
-        self.removeItem(polygon)
+        self.mainWindow.view_image_ploygon.scene().removeItem(polygon)
+
+        # Get the points of the polygon
+        polygon_points = polygon.polygon().toList()
+        # Convert QList<QPointF> to List of tuples
+        polygon_points = [(point.x(), point.y()) for point in polygon_points]
+
+        # Remove points and lines from the scene
+        for i in range(len(polygon_points)):
+            self.remove_point(polygon_points[i])
+            self.remove_line(polygon_points[i-1], polygon_points[i])
+
+        # Convert polygon_points to list of QPoints
+        polygon_points = [QPointF(point[0], point[1]) for point in polygon_points]
+
+        # Remove the points of the polygon from the list of closed polygons
+        if polygon_points in self.mainWindow.view_image_ploygon.scene().closed_polygons:
+            self.mainWindow.view_image_ploygon.scene().closed_polygons.remove(polygon_points)
+
+        # Remove points from the list
+        self.mainWindow.list_clicked_points.clear()
+
+        # Add remaining polygon points to the list with separator
+        for other_polygon_points in self.mainWindow.view_image_ploygon.scene().closed_polygons:
+            for point in other_polygon_points:
+                self.mainWindow.list_clicked_points.addItem('({:.2f}, {:.2f})'.format(point.x(), point.y()))
+            self.mainWindow.list_clicked_points.addItem('...........................')
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -91,6 +127,7 @@ class CustomGraphicsScene(QGraphicsScene):
         ellipse = QGraphicsEllipseItem(point.x() - radius / 2, point.y() - radius / 2, radius, radius)
         ellipse.setBrush(brush)
         self.addItem(ellipse)
+        self.pointItems[(point.x(), point.y())] = ellipse  # store the QGraphicsEllipseItem
         if len(self.points) == 0:
             self.close_poly = ellipse
 
@@ -100,6 +137,7 @@ class CustomGraphicsScene(QGraphicsScene):
         line = QGraphicsLineItem(start.x(), start.y(), end.x(), end.y())
         line.setPen(pen)
         self.addItem(line)
+        self.lineItems[((start.x(), start.y()), (end.x(), end.y()))] = line  # store the QGraphicsLineItem
 
     def add_polygon(self, points, color, opacity):
         # Create a polygon item
@@ -141,7 +179,6 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
         self.slider_polygon_opacity.valueChanged.connect(self.on_slider_changed)
         self.radioButton_points_lines_opacity.toggled.connect(self.on_radio_button_toggled)
 
-        # Set radioButton_points_lines_opacity as checked at the beginning
         self.radioButton_points_lines_opacity.setChecked(True)
 
     def on_radio_button_toggled(self):
@@ -346,3 +383,9 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
+
+# 點擊顯示的種類
+# 限制辨識的種類
+# 添加右列分頁，顯示種類與辨識顯示按鈕
+# 把yolov8圖放在圖片中最上面，僅次點位，可使用一個按鈕控制透明度
+# json加上old size(label_img_size), new side(predict_img_size), label points, objects data inside polygons, objects data outside polygons
