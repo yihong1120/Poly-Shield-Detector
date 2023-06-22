@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>889</width>
+    <width>899</width>
     <height>805</height>
    </rect>
   </property>
@@ -20,33 +20,20 @@
       <x>20</x>
       <y>620</y>
       <width>100</width>
-      <height>32</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Upload Image</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="button_show_lists">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>620</y>
-      <width>100</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>顯示禁區lists</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_img_path">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>660</y>
+      <y>720</y>
       <width>81</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -57,9 +44,9 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>660</y>
+      <y>720</y>
       <width>491</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -76,23 +63,13 @@
      </rect>
     </property>
    </widget>
-   <widget class="QListWidget" name="list_clicked_points">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>30</y>
-      <width>261</width>
-      <height>341</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="button_predict">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>620</y>
+      <x>20</x>
+      <y>670</y>
       <width>100</width>
-      <height>32</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -112,54 +89,173 @@
      <string>Original Image:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="show_clicked_points">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>10</y>
-      <width>101</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Click Points:</string>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="list_detected_objects">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>410</y>
-      <width>261</width>
-      <height>341</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="show_detected_objects">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>390</y>
-      <width>111</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Detected Objects:</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="button_clear_lists">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>130</x>
       <y>620</y>
       <width>100</width>
-      <height>32</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Clear Lists</string>
     </property>
+   </widget>
+   <widget class="QSlider" name="slider_polygon_opacity">
+    <property name="geometry">
+     <rect>
+      <x>249</x>
+      <y>630</y>
+      <width>221</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton_points_lines_opacity">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>670</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Points and Lines Opacity</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tab_show_data">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>0</y>
+      <width>291</width>
+      <height>751</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Prediction</string>
+     </attribute>
+     <widget class="QLabel" name="show_clicked_points">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Click Points:</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="list_clicked_points">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>261</width>
+        <height>321</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="show_detected_objects">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>360</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Detected Objects:</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="list_detected_objects">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>380</y>
+        <width>261</width>
+        <height>341</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Set Classes</string>
+     </attribute>
+     <widget class="QLabel" name="show_predct_classes">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Predict Classes:</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="list_classes">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>380</y>
+        <width>261</width>
+        <height>341</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="show_objects">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>360</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Show Classes:</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="list_predict_classes">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>261</width>
+        <height>321</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -168,7 +264,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>889</width>
+     <width>899</width>
      <height>24</height>
     </rect>
    </property>
