@@ -369,6 +369,10 @@ class ImageProcessApp(QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
+    # Check if the "models" folder exists, and create it if it doesn't
+    if not os.path.exists('models'):
+        os.makedirs('models')
+
     # Check if the "output" folder exists, and create it if it doesn't
     if not os.path.exists('output'):
         os.makedirs('output')
@@ -383,3 +387,11 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
+
+
+
+# 點擊顯示的種類
+# 限制辨識的種類
+# 添加右列分頁，顯示種類與辨識顯示按鈕
+# 把yolov8圖放在圖片中最上面，僅次點位，可使用一個按鈕控制透明度
+# json加上old size(label_img_size), new side(predict_img_size), label points, objects data inside polygons, objects data outside polygons
